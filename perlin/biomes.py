@@ -1,62 +1,61 @@
-import perlin
-import sys
-import pygame
-import math
+import perlin, sys, math, pygame
 
-# What's the width of a given block? This will determine most other visual settings.
-SIZE = 50
+# The coordinates of the top left corner being displayed.
+top = 0
+left = 0
 
 # Setup to get the Pygame window going.
 pygame.init()
-screen = pygame.display.set_mode((10*SIZE, 10*SIZE))
+screen = pygame.display.set_mode((500, 500))
 pygame.display.set_caption('Biome Generation')
 
-# What's the size we 
-
-# Our example will be a 50*50 grid.
-grid = [[0]*SIZE]*SIZE
+# We will see 50x50 blocks at any given time.
+grid = [[0]*50]*50
 
 # There will be three biomes in the terrain: desert, grass, and snowy. Each one is represented by its own color.
-biomes = {
+biome_colors = {
     0: (255,255,0), # Yellow
-    1: (38,108,46),   # Vibrant reen
+    1: (38,108,46),   # Forest green
     2: (255,255,255) # White
 }
-
-# Assign a randomly chosen value to be the seed. We'll use this as the z value.
-seed = 101.0
 
 # Import an instance of our Perlin noise generator.
 noise = perlin.Perlin()
 
-# Iterate through each grid element and assign it a value.
-for x in range(0,SIZE):
-    for y in range(0, SIZE):
-        # Dividing by 2 is done because if you pass Perlin whole numbers (like 1.0, 2.0, etc.)
-        # You'll get nothing but 0's, which isn't very interesting.
-        value = abs(noise.getNoise(x/2,y/2,seed))
-        if value < .1:
-            grid[x][y] = 0
-        elif value < .85:
-            grid[x][y] = 1
-        else:
-            grid[x][y] = 2
-#        print(x,y,value)
-        
+# Ask the user what seed to use for the simulation.
+seed = float(input('Enter the numerical seed: '))
 
-# Blit everything to the screen
-screen = pygame.Surface(screen.get_size())
-screen.blit(screen, (0, 0))
+
+screen.fill((255,255,255))
 pygame.display.flip()
+# Game loop
+running = True
+while running:
+    # Iterate through the biome list and determine the biome.
+    for x in range(left, 50+left):
+        for y in range(top, 50+top):
+            ans = abs(noise.getNoise(x/2, y/2, seed))
+            if ans < .25:   # Deserts should be relatively uncommon
+                color = biome_colors[0]
+            elif ans < .85: # Grass should be the most common biome
+                color = biome_colors[1]
+            else:           # Snowy areas should also be uncommon
+                color = biome_colors[2]
+            pygame.draw.rect(screen, color, ((x-left)*10, (y-top)*10, 10, 10))
 
-# Event loop
-while 1:
-    
-#    screen.fill((0,0,0))
-    pygame.draw.rect(screen, (255,0,0), (10,10,50,50))
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-    screen.blit(screen, (0, 0))
+    for e in pygame.event.get():
+        if e.type == pygame.KEYDOWN:
+            if e.key == pygame.K_w:
+                top = top-1
+            elif e.key == pygame.K_s:
+                top = top+1
+            elif e.key == pygame.K_a:
+                left = left - 1
+            elif e.key == pygame.K_d:
+                left = left + 1
+        if e.type == pygame.QUIT:
+            running = False
+
     pygame.display.flip()
+pygame.quit()
+sys.exit()
