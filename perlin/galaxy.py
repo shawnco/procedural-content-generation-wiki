@@ -37,7 +37,6 @@ planet_noise = perlin.Perlin()
 # Ask the user what seed to use for the simulation.
 seed = float(input('Enter the numerical seed: '))   
 
-#screen.fill((255,255,255))
 pygame.display.flip()
 # Game loop
 running = True
