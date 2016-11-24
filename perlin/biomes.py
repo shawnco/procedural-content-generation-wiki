@@ -34,7 +34,7 @@ while running:
     # Iterate through the biome list and determine the biome.
     for x in range(left, 50+left):
         for y in range(top, 50+top):
-            ans = abs(noise.getNoise(x/2, y/2, seed))
+            ans = noise.getNoise(x/2, y/2, seed)
             if ans < .25:   # Deserts should be relatively uncommon
                 color = biome_colors[0]
             elif ans < .85: # Grass should be the most common biome
