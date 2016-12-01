@@ -1,16 +1,3 @@
-'''
-This program simulates creation of a settlement, as small or large as the user makes it. 
-
-At the start there is always a town hall. Roads emanate in all 4 directions from it, following these production rules:
-* The default action is to add a road segment with a house.
-* Every 6 houses add a church
-* Every 10 houses add a school
-
-house(x): x == 6 --> church(), house(x+1)
-house(x): x == 10 --> school(), house(1) 
-house(x): house(x+1)
-'''
-
 import pygame
 
 # Parameterized production rules can't be easily represented as dictionaries.
@@ -36,7 +23,7 @@ start = [['town_hall', 0]]
 end = []
 
 # Loop through and do the generating.
-iterations = 6
+iterations = 5
 
 for i in range(0,iterations):
     end = []
@@ -64,6 +51,10 @@ building_heights = {
     'town_hall': 100
 }
 
+# We will start drawing from (10, 10)
+x = 10
+y = 10
+
 # Set up the screen and draw the city.
 pygame.init()
 screen = pygame.display.set_mode((1000, 500))
@@ -71,10 +62,17 @@ pygame.display.set_caption('L-System City')
 running = True
 screen.fill((255,255,255))
 while running:
-    i = 0
     for s in start:
-        pygame.draw.rect(screen, building_colors[s[0]], (i*20, 250, 10, building_heights[s[0]]))
-        i = i + 1
+        pygame.draw.rect(screen, building_colors[s[0]], (x, y, 10, building_heights[s[0]]))
+        x += 15
+        if x >= 970:
+            x = 10
+            y += 60    
+    
+    
+#    for s in start:
+#        pygame.draw.rect(screen, building_colors[s[0]], (i*20, 250, 10, building_heights[s[0]]))
+#        i = i + 1
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             running = False
